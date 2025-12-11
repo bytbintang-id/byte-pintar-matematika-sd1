@@ -37,7 +37,8 @@
         }
 
         .selected-item {
-            ring: 4px solid #3b82f6;
+            /* PERBAIKAN: Mengganti 'ring' Tailwind dengan 'box-shadow' CSS standar */
+            box-shadow: 0 0 0 4px #3b82f6;
             transform: scale(1.1);
             background-color: #eff6ff;
         }
@@ -85,7 +86,7 @@
             <h1 class="text-3xl md:text-5xl font-extrabold text-slate-700 font-hand mb-2">
                 🎓 Pintar Matematika
             </h1>
-            <p class="text-gray-600 font-medium text-sm md:text-base">Aplikasi Belajar SD Kelas 1
+            <p class="text-gray-600 font-medium text-sm md:text-base">Aplikasi Belajar SD Kelas 1 (Kurikulum Merdeka)
             </p>
         </header>
 
@@ -502,9 +503,22 @@
         }
 
         function renderTebakBentuk(c) {
-            const cat = shapesData[Math.floor(Math.random() * 3)];
-            const item = cat.items[Math.floor(Math.random() * cat.items.length)];
-            c.innerHTML = `<h2 class="text-xl md:text-2xl text-blue-600 font-hand mb-4">Tebak Bentuk</h2><div class="bg-blue-50 p-6 rounded-2xl mb-6 text-center border-2 border-blue-100"><div class="text-6xl mb-2 animate-bounce">${cat.icon}</div><p class="text-xl font-bold text-slate-700">"${item}"</p></div><div class="flex flex-wrap justify-center gap-2" id="opt-tb"></div>`;
+            const cn = [{
+                n: 'Segitiga',
+                i: '🔺',
+                t: 'triangle'
+            }, {
+                n: 'Segi Empat',
+                i: '🟦',
+                t: 'quad'
+            }, {
+                n: 'Lengkung',
+                i: '⚪',
+                t: 'circle'
+            }];
+            const cat = cn[Math.floor(Math.random() * 3)];
+            const item = shapesData.find(d => d.type === cat.t).items[Math.floor(Math.random() * shapesData.find(d => d.type === cat.t).items.length)];
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-blue-600 font-hand mb-4">Tebak Bentuk</h2><div class="bg-blue-50 p-6 rounded-2xl mb-6 text-center border-2 border-blue-100"><div class="text-6xl mb-2 animate-bounce">${cat.i}</div><p class="text-xl font-bold text-slate-700">"${item}"</p></div><div class="flex flex-wrap justify-center gap-2" id="opt-tb"></div>`;
             const oc = document.getElementById('opt-tb');
             [{
                 label: 'Segitiga',
@@ -520,7 +534,7 @@
                 b.className = "px-4 py-2 bg-white rounded shadow border font-bold text-sm";
                 b.textContent = o.label;
                 b.onclick = () => {
-                    if (o.value === cat.type) {
+                    if (o.value === cat.t) {
                         showNotif("Benar!", 'success');
                         setTimeout(() => loadActivity(renderTebakBentuk), 1000);
                     } else showNotif("Coba lagi", 'error');

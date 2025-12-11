@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematika SD Kelas 1 - Semester 1 & 2 Lengkap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Balsamiq+Sans:wght@700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f3ff;
+            /* Light Violet background */
+        }
+
+        .font-hand {
+            font-family: 'Balsamiq Sans', cursive;
+        }
+
+        .activity-card {
+            transition: all 0.3s ease;
+        }
+
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+
+        /* Bab 4 Shapes */
+        .shape-box {
+            transition: transform 0.2s;
+        }
+
+        .shape-box:hover {
+            transform: scale(1.1);
+        }
+
+        .selected-item {
+            ring: 4px solid #3b82f6;
+            transform: scale(1.1);
+            background-color: #eff6ff;
+        }
+
+        /* Bab 5 Sticks */
+        .stick-bundle {
+            background-image: repeating-linear-gradient(90deg, #d97706, #d97706 5px, #b45309 6px, #b45309 10px);
+            border-radius: 4px;
+            box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Bab 7 Height Bars */
+        .height-bar {
+            cursor: grab;
+            transition: height 0.3s ease, background-color 0.3s;
+            touch-action: none;
+        }
+
+        /* Bab 8 Diagram Blocks */
+        .diagram-block {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="p-2 md:p-8 min-h-screen">
+
+    <div id="app" class="max-w-6xl mx-auto">
+
+        <!-- Header Utama -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-700 font-hand mb-2">
+                🎓 Pintar Matematika
+            </h1>
+            <p class="text-gray-600 font-medium text-sm md:text-base">Aplikasi Belajar SD Kelas 1 (Kurikulum Merdeka)
+            </p>
+        </header>
+
+        <!-- Navigasi Bab (Scrollable di Mobile) -->
+        <div class="overflow-x-auto pb-4 mb-4 no-scrollbar">
+            <div class="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-2 min-w-max px-2">
+                <button onclick="switchChapter(1)" id="btn-bab1" class="nav-btn bg-green-200 text-green-800">1.
+                    Membilang</button>
+                <button onclick="switchChapter(2)" id="btn-bab2" class="nav-btn bg-orange-200 text-orange-800">2.
+                    Penjumlahan</button>
+                <button onclick="switchChapter(3)" id="btn-bab3" class="nav-btn bg-red-200 text-red-800">3.
+                    Pengurangan</button>
+                <button onclick="switchChapter(4)" id="btn-bab4" class="nav-btn bg-blue-200 text-blue-800">4.
+                    Bentuk</button>
+                <button onclick="switchChapter(5)" id="btn-bab5" class="nav-btn bg-purple-200 text-purple-800">5.
+                    Bilangan 20</button>
+                <button onclick="switchChapter(6)" id="btn-bab6" class="nav-btn bg-pink-200 text-pink-800">6. + & -
+                    (20)</button>
+                <button onclick="switchChapter(7)" id="btn-bab7" class="nav-btn bg-cyan-200 text-cyan-800">7.
+                    Mengukur</button>
+                <button onclick="switchChapter(8)" id="btn-bab8" class="nav-btn bg-indigo-200 text-indigo-800">8.
+                    Diagram</button>
+            </div>
+        </div>
+
+        <!-- Notifikasi -->
+        <div id="notification"
+            class="fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full text-white font-bold shadow-xl hidden z-50 transition-all text-center min-w-[300px]">
+            Pesan Notifikasi
+        </div>
+
+        <!-- ================= AREA AKTIVITAS ================= -->
+
+        <!-- Menu Sub-Bab (Dinamis) -->
+        <div id="sub-menu" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 max-w-4xl mx-auto">
+            <!-- Tombol aktivitas akan muncul di sini -->
+        </div>
+
+        <!-- Kontainer Game Utama -->
+        <div id="game-container"
+            class="bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 min-h-[400px] flex flex-col justify-center items-center relative overflow-hidden transition-all duration-500">
+            <div class="text-center text-gray-400 mt-10">
+                <p class="text-6xl mb-4">👋</p>
+                <p class="text-xl">Pilih Bab dan Aktivitas di atas untuk mulai belajar!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA & VARIABEL GLOBAL ---
+        const objects = ['🍎', '⚽', '🚗', '🐱', '⭐', '🎈', '🍩', '🐥'];
+        const shapesData = [
+            { name: 'Segitiga', icon: '🔺', type: 'triangle', items: ['Penggaris', 'Pizza', 'Atap', 'Rambu'] },
+            { name: 'Segi Empat', icon: '🟦', type: 'quad', items: ['Buku', 'Jendela', 'Papan', 'TV'] },
+            { name: 'Lengkung', icon: '⚪', type: 'circle', items: ['Jam', 'Roda', 'Donat', 'Koin'] }
+        ];
+
+        let currentActivityFunc = null;
+        let currentLevelData = null;
+
+        // --- SISTEM NAVIGASI ---
+        function switchChapter(bab) {
+            // Reset Button Styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-4 py-2 md:px-5 md:py-3 rounded-2xl font-bold text-sm shadow-md transition transform hover:-translate-y-1 whitespace-nowrap";
+                const id = btn.id;
+                if (id.includes('1')) btn.classList.add('bg-green-200', 'text-green-800');
+                if (id.includes('2')) btn.classList.add('bg-orange-200', 'text-orange-800');
+                if (id.includes('3')) btn.classList.add('bg-red-200', 'text-red-800');
+                if (id.includes('4')) btn.classList.add('bg-blue-200', 'text-blue-800');
+                if (id.includes('5')) btn.classList.add('bg-purple-200', 'text-purple-800');
+                if (id.includes('6')) btn.classList.add('bg-pink-200', 'text-pink-800');
+                if (id.includes('7')) btn.classList.add('bg-cyan-200', 'text-cyan-800');
+                if (id.includes('8')) btn.classList.add('bg-indigo-200', 'text-indigo-800');
+            });
+
+            // Set Active Button
+            const activeBtn = document.getElementById(`btn-bab${bab}`);
+            activeBtn.classList.remove('bg-green-200', 'bg-orange-200', 'bg-red-200', 'bg-blue-200', 'bg-purple-200', 'bg-pink-200', 'bg-cyan-200', 'bg-indigo-200', 'text-green-800', 'text-orange-800', 'text-red-800', 'text-blue-800', 'text-purple-800', 'text-pink-800', 'text-cyan-800', 'text-indigo-800');
+            activeBtn.classList.add('text-white', 'shadow-lg', 'scale-105');
+
+            const container = document.getElementById('game-container');
+            const menu = document.getElementById('sub-menu');
+
+            // Konfigurasi per Bab
+            if (bab === 1) {
+                activeBtn.classList.add('bg-green-500');
+                container.className = "bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-green-100 min-h-[400px] flex flex-col justify-center items-center relative";
+                renderMenu(menu, 'green', [
+                    { label: '1. Ayo Membilang', action: () => loadActivity(renderHitung) },
+                    { label: '2. Membandingkan', action: () => loadActivity(renderBandingkan) },
+                    { label: '3. Pasangan 10', action: () => loadActivity(renderPasangan10) }
+                ]);
+                loadActivity(renderHitung);
+            } else if (bab === 2) {
+                activeBtn.classList.add('bg-orange-500');
+                container.className = "bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-orange-100 min-h-[400px] flex flex-col justify-center items-center relative";
+                renderMenu(menu, 'orange', [
+                    { label: '1. Cerita Gambar', action: () => loadActivity(renderVisualTambah) },
+                    { label: '2. Hitung Maju', action: () => loadActivity(() => renderGarisBilangan('maju')) },
+                    { label: '3. Soal Cerita (+)', action: () => loadActivity(() => renderSoalCerita('tambah')) }
+                ]);
+                loadActivity(renderVisualTambah);
+            } else if (bab === 3) {
+                activeBtn.classList.add('bg-red-500');
+                container.className = "bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-red-100 min-h-[400px] flex flex-col justify-center items-center relative";
+                renderMenu(menu, 'red', [
+                    { label: '1. Ayo Kurangi', action: () => loadActivity(renderVisualKurang) },
+                    { label: '2. Hitung Mundur', action: () => loadActivity(() => renderGarisBilangan('mundur')) },
+                    { label: '3. Hubungan (+ & -)', action: () => loadActivity(renderHubungan) }
+                ]);
+                loadActivity(renderVisualKurang);
+            } else if (bab === 4) {
+                activeBtn.classList.add('bg-blue-500');
+                container.className = "bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-blue-100 min-h-[400px] flex flex-col justify-center items-center relative";
+                renderMenu(menu, 'blue', [
+                    { label: '1. Tebak Bentuk', action: () => loadActivity(renderTebakBentuk) },
+                    { label: '2. Kelompokkan', action: () => loadActivity(renderKelompokkan) },
+                    { label: '3. Susun Bangun', action: () => loadActivity(renderSusunBangun) }
+                ]);
+                loadActivity(renderTebakBentuk);
+            } else if (bab === 5) {
+                activeBtn.classList.add('bg-purple-500');
+                container.className = "bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-purple-100 min-h-[400px] flex flex-col justify-center items-center relative";
+                renderMenu(menu, 'purple', [
+                    { label: '1. Mengenal 11-20', action: () => loadActivity(renderMengenal20) },
+                    { label: '2. Nilai Tempat', action: () => loadActivity(renderNilaiTempat) },
+                    { label: '3. Urutkan Bilangan', action: () => loadActivity(renderUrutkan) }
+                ]);
+                loadActivity(renderMengenal20);
+            } else if (bab === 6) {
+                activeBtn.classList.add('bg-pink-500');
+                container.className = "bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-pink-100 min-h-[400px] flex flex-col justify-center items-center relative";
+                renderMenu(menu, 'pink', [
+                    { label: '1. Beda & Selisih', action: () => loadActivity(renderSelisih) },
+                    { label: '2. Penjumlahan 20', action: () => loadActivity(renderTambah20) },
+                    { label: '3. Pengurangan 20', action: () => loadActivity(renderKurang20) }
+                ]);
+                loadActivity(renderSelisih);
+            } else if (bab === 7) {
+                activeBtn.classList.add('bg-cyan-500');
+                container.className = "bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-cyan-100 min-h-[400px] flex flex-col justify-center items-center relative";
+                renderMenu(menu, 'cyan', [
+                    { label: '1. Bandingkan Tinggi', action: () => loadActivity(renderBandingkanTinggi) },
+                    { label: '2. Ukur Non-Baku', action: () => loadActivity(renderUkurNonBaku) },
+                    { label: '3. Urutkan Panjang', action: () => loadActivity(renderUrutkanPanjang) }
+                ]);
+                loadActivity(renderBandingkanTinggi);
+            } else if (bab === 8) { // New Chapter
+                activeBtn.classList.add('bg-indigo-500');
+                container.className = "bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-indigo-100 min-h-[400px] flex flex-col justify-center items-center relative";
+                renderMenu(menu, 'indigo', [
+                    { label: '1. Kelompokkan Data', action: () => loadActivity(renderKelompokkanData) },
+                    { label: '2. Buat Diagram', action: () => loadActivity(renderBuatDiagram) },
+                    { label: '3. Membaca Data', action: () => loadActivity(renderBacaData) }
+                ]);
+                loadActivity(renderKelompokkanData);
+            }
+        }
+
+        function renderMenu(container, color, items) {
+            container.innerHTML = '';
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.textContent = item.label;
+                btn.className = `p-3 md:p-4 bg-white rounded-xl shadow border-b-4 border-${color}-400 hover:bg-${color}-50 font-bold text-${color}-700 transition active:scale-95 text-sm md:text-base`;
+                btn.onclick = item.action;
+                container.appendChild(btn);
+            });
+        }
+
+        function showNotif(msg, type) {
+            const notif = document.getElementById('notification');
+            notif.innerHTML = msg;
+            notif.className = `fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full text-white font-bold shadow-xl z-50 transition-all text-center min-w-[300px] ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            notif.classList.remove('hidden');
+            setTimeout(() => notif.classList.add('hidden'), 2000);
+        }
+
+        function loadActivity(func) {
+            const container = document.getElementById('game-container');
+            container.innerHTML = '';
+            currentActivityFunc = func;
+            func(container);
+        }
+
+        function generateOptions(correctVal, container, callback = null, customOptions = null) {
+            container.innerHTML = '';
+            let options = [];
+
+            if (customOptions) {
+                options = customOptions;
+            } else {
+                options = [correctVal];
+                while (options.length < 3) {
+                    let r = Math.floor(Math.random() * 20) + 1;
+                    if (!options.includes(r) && r >= 0) options.push(r);
+                }
+                options.sort(() => Math.random() - 0.5);
+            }
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                const displayVal = (typeof opt === 'object') ? opt.label : opt;
+                const valueVal = (typeof opt === 'object') ? opt.value : opt;
+                const correctCheck = (typeof correctVal === 'object') ? correctVal.value : correctVal;
+
+                btn.className = "min-w-[4rem] px-4 py-3 md:px-6 md:py-4 rounded-xl font-bold text-xl md:text-2xl shadow-md transition transform hover:scale-105 focus:outline-none bg-white text-gray-800 border-2 border-gray-200";
+                btn.textContent = displayVal;
+
+                btn.onclick = () => {
+                    if (valueVal === correctCheck) {
+                        btn.classList.remove('bg-white', 'text-gray-800');
+                        btn.classList.add('bg-green-500', 'text-white', 'border-green-600');
+                        showNotif("Benar! 🎉", 'success');
+                        setTimeout(() => {
+                            if (callback) callback();
+                            else if (currentActivityFunc) currentActivityFunc(container.parentElement);
+                        }, 1000);
+                    } else {
+                        btn.classList.add('bg-red-100', 'text-red-500', 'shake');
+                        showNotif("Coba lagi ya...", 'error');
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // ================= HELPER FUNCTIONS (GLOBAL) =================
+
+        // BAB 1: Membandingkan (checkC)
+        function checkC(ans, sel) {
+            if (ans === sel) {
+                showNotif("Benar! 🎉", 'success');
+                setTimeout(() => loadActivity(renderBandingkan), 1000);
+            } else {
+                showNotif("Hitung lagi...", 'error');
+            }
+        }
+
+        // BAB 2: Garis Bilangan (animJ)
+        function animJ(s, j, m, c) {
+            const e = m === 'maju' ? s + j : s - j;
+            document.getElementById('pm').style.left = `calc(${e * 9}% + 5px)`;
+            setTimeout(() => {
+                for (let i = Math.min(s, e); i <= Math.max(s, e); i++)
+                    document.getElementById(`lc-${i}`).classList.add(`bg-${c}-200`);
+                document.getElementById('ro').classList.remove('hidden');
+                generateOptions(e, document.getElementById('ro'), () => loadActivity(() => renderGarisBilangan(m)));
+            }, 1000);
+        }
+
+        // BAB 4: Kelompokkan Bentuk (checkG)
+        function checkG() {
+            const e = document.querySelectorAll('.shape-box');
+            let ok = true;
+            let cnt = 0;
+            e.forEach(x => {
+                const s = x.classList.contains('selected-item');
+                const k = x.getAttribute('data-k') === 'true';
+                if (s) cnt++;
+                if (s !== k) ok = false;
+            });
+            if (ok && cnt > 0) {
+                showNotif("Hebat!", 'success');
+                setTimeout(() => loadActivity(renderKelompokkan), 1000);
+            } else {
+                showNotif("Salah...", 'error');
+            }
+        }
+
+        // BAB 5: Nilai Tempat (checkNT)
+        function checkNT(e) {
+            const p = document.getElementById('inp-p').value;
+            const s = document.getElementById('inp-s').value;
+            if (p == 1 && s == e) {
+                showNotif("Benar!", 'success');
+                setTimeout(() => loadActivity(renderNilaiTempat), 1000);
+            } else {
+                showNotif("Cek lagi", 'error');
+            }
+        }
+
+        // BAB 5: Urutkan Bilangan (clkS)
+        function clkS(b, v) {
+            if (v === currentLevelData.t[currentLevelData.i]) {
+                b.style.visibility = 'hidden';
+                const s = document.getElementById('slot-c').children[currentLevelData.i];
+                s.className = "w-14 h-14 bg-green-500 text-white rounded-xl flex items-center justify-center text-xl font-bold shadow";
+                s.textContent = v;
+                currentLevelData.i++;
+                if (currentLevelData.i === 3) {
+                    showNotif("Sempurna!", 'success');
+                    setTimeout(() => loadActivity(renderUrutkan), 1000);
+                }
+            } else {
+                b.classList.add('bg-red-100');
+                setTimeout(() => b.classList.remove('bg-red-100'), 300);
+                showNotif("Salah urutan", 'error');
+            }
+        }
+
+        // BAB 7: Bandingkan Tinggi (swapH)
+        function swapH(i) {
+            const d = currentLevelData;
+            if (d.sel === -1) {
+                d.sel = i;
+                document.getElementById(`b-${i}`).classList.add('bg-yellow-400');
+            } else {
+                const t = d.h[d.sel];
+                d.h[d.sel] = d.h[i];
+                d.h[i] = t;
+                d.sel = -1;
+                loadActivity(renderBandingkanTinggi);
+            }
+        }
+
+        // BAB 7: Bandingkan Tinggi (checkH)
+        function checkH() {
+            const h = currentLevelData.h;
+            let ok = true;
+            for (let i = 0; i < 3; i++)
+                if (h[i] > h[i + 1]) ok = false;
+            if (ok) {
+                showNotif("Urutan Benar!", 'success');
+                setTimeout(() => loadActivity(renderBandingkanTinggi), 1500);
+            } else {
+                showNotif("Belum tepat", 'error');
+            }
+        }
+
+
+        // ================= BAB 1-7 LOGIC (DEKOMPRESI UNTUK STABILITAS) =================
+
+        function renderHitung(c) {
+            const n = Math.floor(Math.random() * 10) + 1;
+            const i = objects[Math.floor(Math.random() * objects.length)];
+            let h = '';
+            for (let j = 0; j < n; j++) h += `<span class="text-4xl md:text-5xl m-1 md:m-2 inline-block animate-bounce">${i}</span>`;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-green-600 mb-4">Hitung Benda!</h2><div class="bg-green-50 p-6 rounded-2xl border-2 border-dashed border-green-300 mb-6 text-center">${h}</div><div class="flex justify-center gap-3" id="opt-1"></div>`;
+            generateOptions(n, document.getElementById('opt-1'));
+        }
+
+        function renderBandingkan(c) {
+            const a = Math.floor(Math.random() * 9) + 1;
+            let b;
+            do {
+                b = Math.floor(Math.random() * 9) + 1
+            } while (a === b);
+            const i = objects[Math.floor(Math.random() * objects.length)];
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-blue-600 mb-4">Lebih BANYAK?</h2><div class="flex gap-4 justify-center"><button onclick="checkC('${a > b ? 'A' : 'B'}','A')" class="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl w-1/2 text-3xl">${Array(a).fill(i).join(' ')}<div class="text-sm font-bold text-blue-800 mt-2">A</div></button><button onclick="checkC('${a > b ? 'A' : 'B'}','B')" class="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl w-1/2 text-3xl">${Array(b).fill(i).join(' ')}<div class="text-sm font-bold text-blue-800 mt-2">B</div></button></div>`;
+        }
+
+        function renderPasangan10(c) {
+            const f = Math.floor(Math.random() * 9) + 1;
+            let h = '';
+            for (let i = 0; i < 10; i++) h += i < f ? `<div class="w-8 h-8 md:w-10 md:h-10 bg-emerald-400 rounded-full border-2 border-emerald-600 flex items-center justify-center text-white">●</div>` : `<div class="w-8 h-8 md:w-10 md:h-10 bg-gray-200 rounded-full border-2 border-dashed border-gray-400"></div>`;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-emerald-600 mb-4">Pasangan 10</h2><p class="mb-4 text-center">Ada <b>${f}</b>. Kurang berapa agar 10?</p><div class="bingkai-10-grid bg-white border-4 border-gray-800 p-2 rounded-xl mb-6">${h}</div><div class="flex justify-center gap-3" id="opt-p10"></div>`;
+            generateOptions(10 - f, document.getElementById('opt-p10'));
+        }
+
+        function renderVisualTambah(c) {
+            const n1 = Math.floor(Math.random() * 5) + 1;
+            const n2 = Math.floor(Math.random() * 5) + 1;
+            const i = objects[Math.floor(Math.random() * objects.length)];
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-orange-600 mb-4">Penjumlahan</h2><div class="flex items-center justify-center gap-2 text-3xl mb-6"><div class="bg-orange-50 p-2 rounded border-2 border-orange-200">${Array(n1).fill(i).join('')}</div><div>+</div><div class="bg-orange-50 p-2 rounded border-2 border-orange-200">${Array(n2).fill(i).join('')}</div><div>= ?</div></div><div class="flex justify-center gap-3" id="opt-vt"></div>`;
+            generateOptions(n1 + n2, document.getElementById('opt-vt'));
+        }
+
+        function renderGarisBilangan(m) {
+            const isM = m === 'maju';
+            const clr = isM ? 'yellow' : 'rose';
+            let s, j, e;
+            if (isM) {
+                s = Math.floor(Math.random() * 5);
+                j = Math.floor(Math.random() * 5) + 1;
+                e = s + j
+            } else {
+                s = Math.floor(Math.random() * 5) + 5;
+                j = Math.floor(Math.random() * 4) + 1;
+                e = s - j
+            }
+            let l = '';
+            for (let i = 0; i <= 10; i++) l += `<div class="flex flex-col items-center relative w-[9%]"><div id="lc-${i}" class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-${clr}-400 flex items-center justify-center font-bold text-${clr}-800 bg-white text-xs z-10 transition-colors">${i}</div><div class="h-1 w-full bg-${clr}-300 absolute top-3 -z-0"></div></div>`;
+            const c = document.getElementById('game-container');
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-${clr}-600 mb-4">Hitung ${isM ? 'Maju' : 'Mundur'}</h2><div class="relative flex justify-between mb-8 w-full">${l}<div id="pm" class="absolute top-[-30px] transition-all duration-1000 text-3xl" style="left:calc(${s * 9}% + 5px)">🐸</div></div><button onclick="animJ(${s},${j},'${m}','${clr}')" class="bg-${clr}-500 text-white px-6 py-2 rounded-full shadow font-bold mb-4">Lompat ${j}x</button><div id="ro" class="hidden flex justify-center gap-3"></div>`;
+        }
+
+        function renderSoalCerita(t) {
+            const n1 = Math.floor(Math.random() * 5) + 3;
+            const n2 = Math.floor(Math.random() * 2) + 1;
+            const c = document.getElementById('game-container');
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-pink-600 mb-4 font-hand">Soal Cerita</h2><div class="bg-pink-50 p-4 rounded-xl border-l-4 border-pink-400 mb-6 text-lg text-center">Ada <b>${n1}</b> bunga. Tumbuh lagi <b>${n2}</b>. Berapa semua?</div><div class="flex justify-center gap-3" id="opt-sc"></div>`;
+            generateOptions(n1 + n2, document.getElementById('opt-sc'));
+        }
+
+        function renderVisualKurang(c) {
+            const t = Math.floor(Math.random() * 5) + 5;
+            const k = Math.floor(Math.random() * (t - 1)) + 1;
+            const i = objects[Math.floor(Math.random() * objects.length)];
+            let h = '';
+            for (let x = 0; x < t; x++) h += x >= (t - k) ? `<div class="relative inline-block m-1 text-4xl opacity-40 grayscale">${i}<div class="absolute inset-0 flex items-center justify-center text-red-600 font-bold">✕</div></div>` : `<div class="inline-block m-1 text-4xl">${i}</div>`;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-red-600 font-hand mb-4">Pengurangan</h2><p class="mb-4 text-center">Ada ${t}, hilang ${k}.</p><div class="text-center bg-red-50 p-4 rounded-xl border-2 border-red-200 mb-6">${h}</div><div class="flex justify-center gap-3" id="opt-vk"></div>`;
+            generateOptions(t - k, document.getElementById('opt-vk'));
+        }
+
+        function renderHubungan(c) {
+            const a = Math.floor(Math.random() * 3) + 2;
+            const b = Math.floor(Math.random() * 3) + 1;
+            const t = a + b;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-indigo-600 font-hand mb-4">Hubungan Angka</h2><div class="flex flex-col items-center gap-4 mb-6"><div class="relative w-32 h-24"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-10 bg-indigo-500 text-white rounded-full flex items-center justify-center font-bold">${t}</div><div class="absolute bottom-0 left-0 w-10 h-10 bg-indigo-100 text-indigo-800 rounded-full flex items-center justify-center font-bold border-2 border-indigo-300">${a}</div><div class="absolute bottom-0 right-0 w-10 h-10 bg-indigo-100 text-indigo-800 rounded-full flex items-center justify-center font-bold border-2 border-indigo-300">${b}</div></div><div class="bg-indigo-50 p-2 rounded text-center text-sm w-full">Jika <b>${a} + ${b} = ${t}</b><br>Maka ${t} - ${a} = ?</div></div><div class="flex justify-center gap-3" id="opt-hub"></div>`;
+            generateOptions(b, document.getElementById('opt-hub'));
+        }
+
+        function renderTebakBentuk(c) {
+            const cat = shapesData[Math.floor(Math.random() * 3)];
+            const item = cat.items[Math.floor(Math.random() * cat.items.length)];
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-blue-600 font-hand mb-4">Tebak Bentuk</h2><div class="bg-blue-50 p-6 rounded-2xl mb-6 text-center border-2 border-blue-100"><div class="text-6xl mb-2 animate-bounce">${cat.icon}</div><p class="text-xl font-bold text-slate-700">"${item}"</p></div><div class="flex flex-wrap justify-center gap-2" id="opt-tb"></div>`;
+            const oc = document.getElementById('opt-tb');
+            [{
+                label: 'Segitiga',
+                value: 'triangle'
+            }, {
+                label: 'Segi 4',
+                value: 'quad'
+            }, {
+                label: 'Lengkung',
+                value: 'circle'
+            }].forEach(o => {
+                const b = document.createElement('button');
+                b.className = "px-4 py-2 bg-white rounded shadow border font-bold text-sm";
+                b.textContent = o.label;
+                b.onclick = () => {
+                    if (o.value === cat.type) {
+                        showNotif("Benar!", 'success');
+                        setTimeout(() => loadActivity(renderTebakBentuk), 1000);
+                    } else showNotif("Coba lagi", 'error');
+                };
+                oc.appendChild(b);
+            });
+        }
+
+        function renderKelompokkan(c) {
+            const t = shapesData[Math.floor(Math.random() * 3)];
+            let it = [];
+            for (let i = 0; i < 3; i++) it.push({ ...t, k: true });
+            while (it.length < 6) {
+                const r = shapesData[Math.floor(Math.random() * 3)];
+                if (r.type !== t.type) it.push({ ...r, k: false });
+            }
+            it.sort(() => Math.random() - 0.5);
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-blue-600 font-hand mb-2">Pilih: ${t.name} ${t.icon}</h2><div class="grid grid-cols-3 gap-3 mb-4">${it.map(i => `<div onclick="this.classList.toggle('selected-item')" data-k="${i.k}" class="shape-box w-16 h-16 bg-white rounded shadow flex items-center justify-center text-3xl cursor-pointer border">${i.icon}</div>`).join('')}</div><button onclick="checkG()" class="bg-blue-500 text-white px-6 py-2 rounded-full font-bold shadow">Cek</button>`;
+        }
+
+        function renderSusunBangun(c) {
+            const cn = [{
+                n: 'Rumah',
+                i: '🏠',
+                p: {
+                    t: 1,
+                    q: 1
+                }
+            }, {
+                n: 'Es Krim',
+                i: '🍦',
+                p: {
+                    t: 1,
+                    c: 1
+                }
+            }];
+            const t = cn[Math.floor(Math.random() * cn.length)];
+            c.innerHTML = `<h2 class="text-xl text-blue-600 font-hand mb-2">Penyusun Benda</h2><div class="text-center mb-4"><div class="text-6xl">${t.i}</div><div class="font-bold">${t.n}</div></div><div class="flex flex-col gap-2" id="opt-sb"></div>`;
+            const l = p => {
+                let s = [];
+                if (p.t) s.push('Segitiga');
+                if (p.q) s.push('Kotak');
+                if (p.c) s.push('Lengkung');
+                return s.join(' + ');
+            };
+            const co = {
+                l: l(t.p),
+                v: true
+            };
+            let op = [co];
+            while (op.length < 2) {
+                let fp = {
+                    ...t.p
+                };
+                fp.t = (fp.t + 1) % 2;
+                if (l(fp) !== co.l) op.push({
+                    l: l(fp),
+                    v: false
+                });
+            }
+            op.sort(() => Math.random() - 0.5);
+            const oc = document.getElementById('opt-sb');
+            op.forEach(o => {
+                const b = document.createElement('button');
+                b.className = "w-full p-3 bg-white rounded shadow font-bold text-sm text-left border";
+                b.textContent = o.l;
+                b.onclick = () => {
+                    if (o.v) {
+                        showNotif("Benar!", 'success');
+                        setTimeout(() => loadActivity(renderSusunBangun), 1000);
+                    } else showNotif("Salah", 'error');
+                };
+                oc.appendChild(b);
+            });
+        }
+
+        function renderMengenal20(c) {
+            const e = Math.floor(Math.random() * 9) + 1;
+            const i = objects[Math.floor(Math.random() * objects.length)];
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-purple-600 font-hand mb-4">10 dan Satuan</h2><div class="flex items-center justify-center gap-4 mb-6"><div class="bg-purple-100 p-2 rounded border-2 border-purple-300 text-center"><div class="grid grid-cols-5 gap-1 mb-1 w-24">${Array(10).fill(`<div class="text-lg">${i}</div>`).join('')}</div><span class="font-bold text-purple-800">10</span></div><span class="text-2xl text-gray-400">+</span><div class="bg-white p-2 rounded border border-gray-300 text-center"><div class="grid grid-cols-3 gap-1 mb-1 w-16">${Array(e).fill(`<div class="text-lg">${i}</div>`).join('')}</div><span class="font-bold text-gray-600">${e}</span></div></div><div class="flex justify-center gap-3" id="opt-m20"></div>`;
+            generateOptions(10 + e, document.getElementById('opt-m20'));
+        }
+
+        function renderNilaiTempat(c) {
+            const e = Math.floor(Math.random() * 9) + 1;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-purple-600 font-hand mb-4">Nilai Tempat: ${10 + e}</h2><div class="flex justify-center gap-6 mb-6 items-end"><div class="text-center"><div class="w-8 h-20 stick-bundle mx-auto mb-1"></div><span class="text-xs font-bold bg-orange-100 px-2 py-1 rounded">Puluhan</span></div><div class="text-center"><div class="flex gap-1 items-end h-20 pb-1 mx-auto">${Array(e).fill('<div class="w-1 h-12 bg-yellow-400 border border-yellow-600"></div>').join('')}</div><span class="text-xs font-bold bg-yellow-100 px-2 py-1 rounded">Satuan</span></div></div><div class="flex justify-center gap-2 items-center mb-4"><input id="inp-p" type="number" class="w-12 h-12 text-center border-2 border-purple-300 rounded text-xl" placeholder="P"><input id="inp-s" type="number" class="w-12 h-12 text-center border-2 border-purple-300 rounded text-xl" placeholder="S"></div><button onclick="checkNT(${e})" class="bg-purple-500 text-white px-6 py-2 rounded-full font-bold shadow">Cek</button>`;
+        }
+
+        function renderUrutkan(c) {
+            let n = [];
+            while (n.length < 3) {
+                let r = Math.floor(Math.random() * 10) + 11;
+                if (!n.includes(r)) n.push(r);
+            }
+            const asc = Math.random() > 0.5;
+            const s = [...n].sort((a, b) => asc ? a - b : b - a);
+            currentLevelData = {
+                t: s,
+                i: 0
+            };
+            c.innerHTML = `<h2 class="text-xl md:text-2xl text-purple-600 font-hand mb-2">Urutkan</h2><p class="mb-4 text-sm bg-purple-100 px-3 py-1 rounded inline-block">${asc ? 'Kecil ➡ Besar' : 'Besar ➡ Kecil'}</p><div class="flex gap-3 mb-6 justify-center">${n.map(v => `<button onclick="clkS(this,${v})" class="w-14 h-14 bg-white border-b-4 border-purple-300 rounded-xl text-xl font-bold text-purple-700">${v}</button>`).join('')}</div><div class="flex gap-2 justify-center" id="slot-c">${[1, 2, 3].map(x => `<div class="w-14 h-14 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-300">${x}</div>`).join('')}</div>`;
+        }
+
+        function renderSelisih(c) {
+            const nA = Math.floor(Math.random() * 5) + 5;
+            const diff = Math.floor(Math.random() * 3) + 1;
+            const nB = Math.random() > 0.5 ? nA - diff : nA + diff;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-pink-600 mb-4">Beda & Selisih</h2><div class="flex justify-center gap-8 mb-6"><div class="text-center"><div class="text-3xl flex flex-col gap-1 bg-white p-2 rounded border border-gray-200">${Array(nA).fill('🍩').join('')}</div><div class="font-bold text-pink-800 mt-2">${nA}</div></div><div class="flex items-center text-gray-400 font-bold text-xl">VS</div><div class="text-center"><div class="text-3xl flex flex-col gap-1 bg-white p-2 rounded border border-gray-200">${Array(nB).fill('🍩').join('')}</div><div class="font-bold text-pink-800 mt-2">${nB}</div></div></div><div class="text-center mb-4 text-lg">Berapa bedanya?</div><div class="flex justify-center gap-3" id="opt-selisih"></div>`;
+            generateOptions(Math.abs(nA - nB), document.getElementById('opt-selisih'));
+        }
+
+        function renderTambah20(c) {
+            const b = Math.floor(Math.random() * 5) + 11;
+            const a = Math.floor(Math.random() * 4) + 1;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-pink-600 mb-4">Penjumlahan 20</h2><div class="bg-pink-50 p-6 rounded-2xl text-center mb-6 border-2 border-pink-200"><div class="text-5xl font-bold text-slate-700 mb-2">${b} + ${a}</div><p class="text-gray-500 text-sm">(Simpan ${b} di kepala, hitung maju ${a})</p></div><div class="flex justify-center gap-2 mb-6">${Array(a).fill('<div class="w-8 h-8 rounded-full bg-pink-400 border-2 border-pink-600"></div>').join('')}</div><div class="flex justify-center gap-3" id="opt-t20"></div>`;
+            generateOptions(b + a, document.getElementById('opt-t20'));
+        }
+
+        function renderKurang20(c) {
+            const s = Math.floor(Math.random() * 5) + 15;
+            const su = Math.floor(Math.random() * 4) + 1;
+            const r = s - su;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-pink-600 mb-4">Pengurangan 20</h2><div class="relative w-full max-w-sm mx-auto mb-8 bg-white p-4 rounded-xl border border-gray-200"><div class="flex justify-between items-center text-lg font-bold text-gray-400"><span>${s - su - 1}</span><span class="text-green-500 scale-125">${r}</span><span>...</span><span class="text-pink-600 scale-125">${s}</span></div><div class="w-full h-1 bg-gray-200 mt-2 relative"><div class="absolute right-0 top-[-10px] text-2xl animate-pulse">🐸</div></div><div class="text-center mt-4 font-bold text-pink-700">Mundur ${su} langkah</div></div><div class="text-center mb-6"><span class="text-4xl font-bold font-mono">${s} - ${su} = ?</span></div><div class="flex justify-center gap-3" id="opt-k20"></div>`;
+            generateOptions(r, document.getElementById('opt-k20'));
+        }
+
+        function renderBandingkanTinggi(c) {
+            let h = [];
+            while (h.length < 4) {
+                const x = Math.floor(Math.random() * 80) + 40;
+                if (!h.includes(x)) h.push(x);
+            }
+            h.sort(() => Math.random() - 0.5);
+            const n = ['Buku', 'Pensil', 'Kotak', 'Botol'];
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-cyan-600 mb-4">Urutkan Tinggi</h2><p class="mb-4 text-center text-sm">Urutkan dari <b>Pendek</b> ke <b>Tinggi</b> (Klik untuk tukar)</p><div class="flex justify-around items-end h-40 border-b-4 border-cyan-600 mb-6 bg-white p-2" id="sort-area">${h.map((v, i) => `<div onclick="swapH(${i})" id="b-${i}" class="height-bar bg-cyan-400 w-12 flex items-end justify-center text-xs text-white pb-1 shadow rounded-t cursor-pointer hover:bg-cyan-500" style="height:${v}px" data-h="${v}">${n[i]}</div>`).join('')}</div><button onclick="checkH()" class="bg-cyan-500 text-white px-6 py-2 rounded-full font-bold shadow">Cek</button>`;
+            currentLevelData = {
+                h: h,
+                sel: -1
+            };
+        }
+
+        function renderUkurNonBaku(c) {
+            const l = Math.floor(Math.random() * 4) + 4;
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-cyan-600 mb-4">Ukur Benda</h2><p class="mb-4 text-center">Panjang pensil = ... 📎?</p><div class="relative w-full max-w-xs mx-auto h-24"><div class="absolute top-0 w-full h-8 bg-yellow-200 border-2 border-yellow-600 rounded flex overflow-hidden">${Array(l).fill('<div class="flex-1 border-r border-dashed border-gray-400"></div>').join('')}</div><div class="absolute top-10 w-full flex justify-between px-1">${Array(l).fill('<span class="text-xl">📎</span>').join('')}</div></div><div class="flex justify-center gap-3 mt-4" id="opt-ukur"></div>`;
+            generateOptions(l, document.getElementById('opt-ukur'));
+        }
+
+        function renderUrutkanPanjang(c) {
+            let l = [];
+            while (l.length < 3) {
+                const x = Math.floor(Math.random() * 5) + 5;
+                if (!l.includes(x)) l.push(x);
+            }
+            const d = [{
+                id: 'A',
+                l: l[0],
+                c: 'red'
+            }, {
+                id: 'B',
+                l: l[1],
+                c: 'green'
+            }, {
+                id: 'C',
+                l: l[2],
+                c: 'blue'
+            }].sort(() => Math.random() - 0.5);
+            const ans = [...d].sort((a, b) => b.l - a.l).map(x => x.id).join('>');
+            c.innerHTML = `<h2 class="text-xl md:text-2xl font-hand text-cyan-600 mb-4">Paling Panjang?</h2><div class="flex flex-col gap-3 w-full max-w-sm mx-auto mb-6">${d.map(i => `<div class="flex items-center gap-2"><span class="font-bold w-4">${i.id}</span><div class="h-6 bg-${i.c}-500 rounded" style="width:${i.l * 10}%"></div></div>`).join('')}</div><div class="flex flex-wrap justify-center gap-2" id="opt-up"></div>`;
+            let op = [ans];
+            while (op.length < 3) {
+                const s = [...d].sort(() => Math.random() - 0.5).map(x => x.id).join('>');
+                if (!op.includes(s)) op.push(s);
+            }
+            op.sort(() => Math.random() - 0.5);
+            const oc = document.getElementById('opt-up');
+            op.forEach(o => {
+                const b = document.createElement('button');
+                b.className = "px-4 py-2 bg-white rounded shadow border font-bold";
+                b.textContent = o;
+                b.onclick = () => {
+                    if (o === ans) {
+                        showNotif("Benar!", 'success');
+                        setTimeout(() => loadActivity(renderUrutkanPanjang), 1000);
+                    } else showNotif("Salah", 'error');
+                };
+                oc.appendChild(b);
+            });
+        }
+
+
+        // ================= BAB 8: MENGENAL DIAGRAM (BARU) =================
+
+        // 1. KELOMPOKKAN DATA (Daftar/Tabel)
+        function renderKelompokkanData(container) {
+            // Generate data: 3 items, random counts (1-5)
+            const items = ['✈️', '🚗', '🧸'];
+            const counts = items.map(() => Math.floor(Math.random() * 4) + 2);
+
+            // Create a "messy" array
+            let scattered = [];
+            items.forEach((item, idx) => {
+                for (let i = 0; i < counts[idx]; i++) scattered.push(item);
+            });
+            scattered.sort(() => Math.random() - 0.5);
+
+            container.innerHTML = `
+                <h2 class="text-2xl font-hand text-indigo-600 text-center mb-2">Hitung & Isi Tabel</h2>
+                
+                <!-- Messy Area -->
+                <div class="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-4 mb-6 flex flex-wrap gap-4 justify-center min-h-[120px]">
+                    ${scattered.map(item => `<div class="text-4xl animate-bounce" style="animation-delay:${Math.random()}s">${item}</div>`).join('')}
+                </div>
+
+                <!-- Input Table -->
+                <div class="flex justify-center gap-4">
+                    ${items.map((item, idx) => `
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">${item}</div>
+                            <input type="number" id="inp-d-${idx}" class="w-16 h-12 text-center border-2 border-indigo-300 rounded-lg text-xl font-bold" placeholder="?">
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="text-center mt-6">
+                    <button onclick="checkData(${counts.join(',')})" class="bg-indigo-500 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-indigo-600 btn-bounce">
+                        Cek Jawaban
+                    </button>
+                </div>
+            `;
+        }
+
+        // Global functions for BAB 8
+        function checkData(c1, c2, c3) {
+            const i1 = parseInt(document.getElementById('inp-d-0').value);
+            const i2 = parseInt(document.getElementById('inp-d-1').value);
+            const i3 = parseInt(document.getElementById('inp-d-2').value);
+
+            if (i1 === c1 && i2 === c2 && i3 === c3) {
+                showNotif("Hebat! Tabel Benar! 🎉", 'success');
+                setTimeout(() => loadActivity(renderKelompokkanData), 1500);
+            } else {
+                showNotif("Masih ada yang salah, hitung lagi ya 🧐", 'error');
+            }
+        }
+
+        // 2. BUAT DIAGRAM GAMBAR
+        function renderBuatDiagram(container) {
+            const items = ['🍎', '🍌', '🍇'];
+            const targetCounts = items.map(() => Math.floor(Math.random() * 4) + 1); // 1-4
+
+            // Initial state: 0 for all
+            currentLevelData = { targets: targetCounts, current: [0, 0, 0] };
+
+            container.innerHTML = `
+                <h2 class="text-2xl font-hand text-indigo-600 text-center mb-2">Buat Diagram</h2>
+                <p class="text-center text-gray-500 mb-4">Klik kolom untuk menambah buah!</p>
+
+                <!-- Target Indicators -->
+                <div class="flex justify-around mb-2 px-4 max-w-md mx-auto w-full">
+                    ${targetCounts.map((c, i) => `<div class="text-sm font-bold text-gray-500">Butuh: ${c}</div>`).join('')}
+                </div>
+
+                <!-- Diagram Builder -->
+                <div class="flex justify-around items-end h-48 border-b-4 border-indigo-400 w-full max-w-md mx-auto bg-white mb-6 p-2">
+                    ${items.map((item, idx) => `
+                        <div class="flex flex-col items-center justify-end h-full w-1/3 cursor-pointer hover:bg-indigo-50 rounded-t-xl transition" onclick="addBlock(${idx}, '${item}')">
+                            <div id="col-${idx}" class="flex flex-col-reverse w-full items-center gap-1 pb-2">
+                                <!-- Blocks go here -->
+                            </div>
+                            <div class="text-3xl border-t-2 border-gray-200 pt-2 w-full text-center">${item}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="text-center">
+                    <button onclick="checkDiagram()" class="bg-indigo-500 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-indigo-600 btn-bounce">
+                        Selesai
+                    </button>
+                    <button onclick="resetDiagram()" class="ml-2 text-indigo-500 font-bold hover:underline">Reset</button>
+                </div>
+            `;
+        }
+
+        function addBlock(idx, icon) {
+            if (currentLevelData.current[idx] < 5) {
+                currentLevelData.current[idx]++;
+                const col = document.getElementById(`col-${idx}`);
+                const block = document.createElement('div');
+                block.className = "diagram-block w-10 h-10 bg-indigo-200 border-2 border-indigo-400 rounded flex items-center justify-center text-xl shadow-sm";
+                block.innerHTML = icon;
+                col.appendChild(block);
+            }
+        }
+
+        function resetDiagram() {
+            loadActivity(renderBuatDiagram); // Reload to reset logic easily or clear arrays
+        }
+
+        function checkDiagram() {
+            const { targets, current } = currentLevelData;
+            let isCorrect = true;
+            for (let i = 0; i < 3; i++) {
+                if (targets[i] !== current[i]) isCorrect = false;
+            }
+
+            if (isCorrect) {
+                showNotif("Diagram Sempurna! 📊", 'success');
+                setTimeout(() => loadActivity(renderBuatDiagram), 1500);
+            } else {
+                showNotif("Jumlah belum sesuai target", 'error');
+            }
+        }
+
+        // 3. MEMBACA DATA (Kuis)
+        function renderBacaData(container) {
+            const items = [
+                { name: 'Bola', icon: '⚽' },
+                { name: 'Boneka', icon: '🧸' },
+                { name: 'Mobil', icon: '🚗' }
+            ];
+            // Generate random data
+            const counts = items.map(() => Math.floor(Math.random() * 5) + 2);
+
+            // Determine question type
+            const qType = Math.floor(Math.random() * 3);
+            let question = "", correctAnswer = "";
+
+            if (qType === 0) { // Most
+                const max = Math.max(...counts);
+                const winner = items[counts.indexOf(max)];
+                question = "Mainan apa yang paling <b>BANYAK</b>?";
+                correctAnswer = winner.name;
+            } else if (qType === 1) { // Least
+                const min = Math.min(...counts);
+                const loser = items[counts.indexOf(min)];
+                question = "Mainan apa yang paling <b>SEDIKIT</b>?";
+                correctAnswer = loser.name;
+            } else { // Total
+                const sum = counts.reduce((a, b) => a + b, 0);
+                question = "Berapa <b>JUMLAH</b> semua mainan?";
+                correctAnswer = sum;
+            }
+
+            container.innerHTML = `
+                <h2 class="text-2xl font-hand text-indigo-600 text-center mb-4">Baca Diagram</h2>
+                
+                <!-- The Diagram -->
+                <div class="flex justify-center items-end gap-6 h-40 border-b-2 border-gray-300 mb-6 w-full max-w-sm mx-auto">
+                    ${items.map((item, idx) => `
+                        <div class="flex flex-col items-center justify-end h-full">
+                            <div class="flex flex-col-reverse gap-1">
+                                ${Array(counts[idx]).fill(`<div class="w-8 h-8 bg-indigo-400 rounded-sm"></div>`).join('')}
+                            </div>
+                            <div class="mt-2 text-2xl" title="${item.name}">${item.icon}</div>
+                            <div class="text-xs font-bold text-gray-500">${counts[idx]}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="bg-indigo-50 p-4 rounded-xl text-center mb-6 text-lg">
+                    ${question}
+                </div>
+
+                <div class="flex justify-center gap-3" id="opt-data"></div>
+            `;
+
+            // Generate Options
+            if (qType === 2) {
+                // Total is a number, use standard number options
+                generateOptions(correctAnswer, document.getElementById('opt-data'), renderBacaData);
+            } else {
+                // Text answers (Names)
+                const options = items.map(i => ({ label: i.name, value: i.name }));
+
+                const optContainer = document.getElementById('opt-data');
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "px-6 py-3 bg-white border-2 border-gray-200 rounded-xl font-bold shadow-md hover:scale-105 transition";
+                    btn.textContent = opt.label;
+                    btn.onclick = () => {
+                        if (opt.value === correctAnswer) {
+                            showNotif("Benar! 👍", 'success');
+                            setTimeout(() => loadActivity(renderBacaData), 1000);
+                        } else {
+                            showNotif("Salah, lihat diagramnya lagi.", 'error');
+                        }
+                    };
+                    optContainer.appendChild(btn);
+                });
+            }
+        }
+
+        // --- INIT APP ---
+        switchChapter(1);
+
+    </script>
+</body>
+
+</html>

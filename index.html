@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematika SD Kelas 1 - Semester 1 & 2 Lengkap</title>
+    <title>Matematika SD Kelas 1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Balsamiq+Sans:wght@700&display=swap');
@@ -37,7 +37,6 @@
         }
 
         .selected-item {
-            /* PERBAIKAN: Mengganti 'ring' Tailwind dengan 'box-shadow' CSS standar */
             box-shadow: 0 0 0 4px #3b82f6;
             transform: scale(1.1);
             background-color: #eff6ff;
@@ -84,7 +83,7 @@
         <!-- Header Utama -->
         <header class="text-center mb-6">
             <h1 class="text-3xl md:text-5xl font-extrabold text-slate-700 font-hand mb-2">
-                🎓 Pintar Matematika
+                🎓 Maestro Matematika Kelas 1
             </h1>
             <p class="text-gray-600 font-medium text-sm md:text-base">Aplikasi Belajar SD Kelas 1 (Kurikulum Merdeka)
             </p>
@@ -724,9 +723,7 @@
             });
         }
 
-
         // ================= BAB 8: MENGENAL DIAGRAM (BARU) =================
-
         // 1. KELOMPOKKAN DATA (Daftar/Tabel)
         function renderKelompokkanData(container) {
             // Generate data: 3 items, random counts (1-5)
@@ -832,14 +829,12 @@
         function resetDiagram() {
             loadActivity(renderBuatDiagram); // Reload to reset logic easily or clear arrays
         }
-
         function checkDiagram() {
             const { targets, current } = currentLevelData;
             let isCorrect = true;
             for (let i = 0; i < 3; i++) {
                 if (targets[i] !== current[i]) isCorrect = false;
             }
-
             if (isCorrect) {
                 showNotif("Diagram Sempurna! 📊", 'success');
                 setTimeout(() => loadActivity(renderBuatDiagram), 1500);
